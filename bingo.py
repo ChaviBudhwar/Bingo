@@ -4,30 +4,39 @@ import tkinter as tk   # To make the window
 from tkinter import filedialog, messagebox # For pop-ups
 from PIL import Image, ImageDraw, ImageFont # For the photos and text
 
+def browse_folder():
+    folder_selected = filedialog.askdirectory()
+    if folder_selected:
+        entry_folder.delete(0, tk.END)
+        entry_folder.insert(0, folder_selected)
 
 def generate_bingo():
 
-    image_folder = "photos"
+    image_folder = entry_folder.get() #"photos"
     all_images = []
     used_images_master = set()
 
 
     if not os.path.exists(image_folder):
-        print(f"ERROR: The folder '{image_folder} does not exist. Please create it.")
-
+        messagebox.showerror("ERROR", f" The folder '{image_folder} does not exist. Please create it.")
+        return
+    
     for filename in os.listdir(image_folder):
         if filename.lower().endswith((".jpg", ".png", ".jpeg")):
             full_path = os.path.join(image_folder, filename)
-            all_images.append(full_path)
+           #all_images.append(full_path)
+            all_images.append(os.path.join(image_folder, filename))
 
-    print(f"I found {len(all_images)} images in the folder.")
+    messagebox.showinfo("Status", f"I found {len(all_images)} images in the folder.")
 
     try: 
-        grid_size = int(input("Enter the grid size (e.g.: 3 for 3x3, 5 for 5x5): ") )
-        total_cards = int(input("Enter the number of cards: "))
+       #grid_size = int(input("Enter the grid size (e.g.: 3 for 3x3, 5 for 5x5): ") )
+       #total_cards = int(input("Enter the number of cards: "))
+       grid_size = int(entry_grid.get())
+       total_cards = int(entry_cards.get())
     except ValueError:
-        print("ERROR: Please enter numbers only.")
-        exit()
+        messagebox.showerror("ERROR", "Please enter numbers only.")
+        return
 
     photos_per_card = grid_size * grid_size
     output_folder = "my_generated_cards"
@@ -36,10 +45,10 @@ def generate_bingo():
         print(f"Created folder: {output_folder}")
 
     if len(all_images) < photos_per_card:
-        print(f"Add more photos.")
-        exit()
+        messagebox.showerror("ERROR", "Please add more photos")
+        return
     else: 
-        print("Preparing to build cards.")
+        messagebox.showinfo("Status", "Preparing to build cards.")
 
 
     for i in range(total_cards):
@@ -95,12 +104,12 @@ def generate_bingo():
         print(f"Saved: {card_filename}")
 
 
-    print("🎉 All Bingo cards have been generated successfully!")
-    print(f"Check the '{output_folder}' folder to see your cards.")
+    messagebox.showinfo("Status", "🎉 All Bingo cards have been generated successfully!")
+    messagebox.showinfo("Status", f"Check the '{output_folder}' folder to see your cards.")
 
 
 
-    print("Creating the Master Call Card...")
+    messagebox.showinfo("Status", "Creating the Master Call Card...")
 
     final_call_list = sorted(list(used_images_master))
 
@@ -147,17 +156,18 @@ def generate_bingo():
 
 
     master_card.save(f"{output_folder}/_MASTER_CALL_CARD.png")
-    print("🎉 Master Call Card saved as '_MASTER_CALL_CARD.png'")
+    messagebox.showinfo("Status", "🎉 Master Call Card saved as '_MASTER_CALL_CARD.png'")
 
 
 root = tk.Tk()
 root.title("Bingo!")
 root.geometry("400x300")
 tk.Label(root, text="Photo Folder:").pack(pady=5) 
-entry_folder = tk.Entry(root)
+entry_folder = tk.Entry(root,width=30)
 entry_folder.insert(0, "photos") 
 entry_folder.pack()
 
+tk.Button(root, text="Browse", command=browse_folder).pack()
 tk.Label(root, text="Grid Size (e.g. 5):").pack(pady=5)
 entry_grid = tk.Entry(root)
 entry_grid.pack()
