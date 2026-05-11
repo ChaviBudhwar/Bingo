@@ -1,4 +1,4 @@
-## Photo Bingo Generator  
+## Bingo Card Maker  
 This repository contains my project **Bingo**, a custom Python-based automation tool designed to create Bingo cards with images and text. It transforms a folder of images into a set of customised and randomised Bingo cards.
 
 ## 📂 What’s Inside:
